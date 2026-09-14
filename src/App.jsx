@@ -28,14 +28,24 @@ const FadeIn = ({ children, delay = 0 }) => {
 
 export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showPopup, setShowPopup] = useState(true); // Estado que controla el Pop-up
 
+  const whatsappUrl = "https://wa.me/573003298899?text=quiero%20hablar%20con%20juan%20para%20que%20hablemos%20de%20mi%20sitio%20web%20paisainmuebles%20y%20de%20el%20marketing%20de%20el%20mismo";
+
+  // Efectos para el scroll de la página y para bloquear el fondo cuando el Pop-up está abierto
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const whatsappUrl = "https://wa.me/573003298899?text=quiero%20hablar%20con%20juan%20para%20que%20hablemos%20de%20mi%20sitio%20web%20paisainmuebles%20y%20de%20el%20marketing%20de%20el%20mismo";
+  useEffect(() => {
+    if (showPopup) {
+      document.body.style.overflow = 'hidden'; // Bloquea el scroll de fondo
+    } else {
+      document.body.style.overflow = 'unset'; // Restaura el scroll
+    }
+  }, [showPopup]);
 
   const properties = [
     {
@@ -61,7 +71,6 @@ export default function App() {
     }
   ];
 
-  // VIDEOS ACTUALIZADOS: 1 de TikTok y 2 de Instagram Reels
   const videosDestacados = [
     {
       id: 1,
@@ -71,19 +80,17 @@ export default function App() {
     {
       id: 2,
       title: "Recorrido Exclusivo",
-      // Enlace de Instagram adaptado para formato Embed (sin códigos de rastreo)
       embedUrl: "https://www.instagram.com/reel/DdMcZaOQcon/embed/" 
     },
     {
       id: 3,
       title: "Propiedad de Lujo",
-      // Enlace de Instagram adaptado para formato Embed
       embedUrl: "https://www.instagram.com/reel/Dc81drbuxFD/embed/" 
     }
   ];
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-16 md:pb-0">
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white pb-16 md:pb-0 relative">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
         .font-serif { font-family: 'Playfair Display', serif; }
@@ -96,7 +103,60 @@ export default function App() {
           background-position: center;
           background-attachment: fixed;
         }
+
+        /* Animación para el Pop-up */
+        @keyframes popupEnter {
+          0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-popup {
+          animation: popupEnter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
       `}</style>
+
+      {/* --- INICIO DEL POP-UP DE BIENVENIDA --- */}
+      {showPopup && (
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4">
+          {/* Fondo oscuro con desenfoque */}
+          <div 
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-500"
+            onClick={() => setShowPopup(false)}
+          ></div>
+          
+          {/* Tarjeta del Pop-up */}
+          <div className="relative bg-white text-center p-10 md:p-14 max-w-lg w-full shadow-[0_30px_60px_rgba(0,0,0,0.4)] animate-popup">
+            <img 
+              src="/logo.png" 
+              alt="Logo Paisa Inmuebles" 
+              className="w-20 h-20 mx-auto mb-6 rounded-full bg-black object-cover shadow-lg"
+            />
+            <h2 className="font-serif text-3xl md:text-4xl mb-3">Bienvenido a <br/> Paisa Inmuebles</h2>
+            <p className="text-gray-500 font-light text-sm mb-10 tracking-wider">
+              ¿Cómo deseas continuar tu experiencia hoy?
+            </p>
+            
+            <div className="flex flex-col gap-4">
+              <button 
+                onClick={() => setShowPopup(false)}
+                className="w-full bg-black text-white px-8 py-4 uppercase text-xs tracking-widest font-semibold hover:bg-gray-800 transition-colors duration-300"
+              >
+                Visitar sitio web
+              </button>
+              <a 
+                href={whatsappUrl} 
+                target="_blank" 
+                rel="noreferrer"
+                onClick={() => setShowPopup(false)}
+                className="w-full bg-white border border-black text-black px-8 py-4 uppercase text-xs tracking-widest font-semibold hover:bg-gray-50 hover:text-gray-600 transition-colors duration-300 inline-block"
+              >
+                Soy el dueño de la marca
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* --- FIN DEL POP-UP --- */}
+
 
       {/* HEADER */}
       <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md py-4 shadow-sm' : 'bg-transparent py-6'}`}>
@@ -314,7 +374,7 @@ export default function App() {
         href={whatsappUrl} 
         target="_blank" 
         rel="noreferrer"
-        className="fixed bottom-24 md:bottom-8 right-6 z-[9999] bg-[#25D366] text-white p-4 rounded-full shadow-[0_10px_30px_rgba(37,211,102,0.4)] hover:scale-110 hover:-translate-y-2 transition-all duration-300"
+        className="fixed bottom-24 md:bottom-8 right-6 z-[9990] bg-[#25D366] text-white p-4 rounded-full shadow-[0_10px_30px_rgba(37,211,102,0.4)] hover:scale-110 hover:-translate-y-2 transition-all duration-300"
         aria-label="Contactar por WhatsApp"
       >
         <svg viewBox="0 0 24 24" className="w-7 h-7 fill-current">
